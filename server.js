@@ -17,6 +17,8 @@ app.post('/telegram', (req, res) => {
 	
 	console.log("Utente in chat " + chatid + " ha scritto '" + text + "'");
 	
+	sendText(chatid, text);
+	
 	res.end();
   
 });
