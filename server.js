@@ -17,9 +17,38 @@ app.post('/telegram', (req, res) => {
 	
 	console.log("Utente in chat " + chatid + " ha scritto '" + text + "'");
 	
-	getMusic(chatid, text);
-	// sendText(chatid, text);
-	
+  process.env.COMMAND_OR_INPUT = 1;
+  
+  if(text == "/start"){
+    sendText(chatid, "Benvenuto nel bot. Visita la lista dei comandi.");
+    process.env.COMMAND_OR_INPUT = 0;
+    process.env.ACTION_TO_DO = 0;
+  }
+  if(text == "/searchsongbyparameter"){
+    sendText(chatid, "Digita i termini con cui eseguire la ricerca");
+    process.env.COMMAND_OR_INPUT = 0;
+    process.env.ACTION_TO_DO = 1;
+  }
+  if(text == "/comandodiprova"){
+    sendText(chatid, "Stai eseguendo un comando di prova");
+    process.env.COMMAND_OR_INPUT = 0;
+    process.env.ACTION_TO_DO = 2;
+  }
+  
+  if(process.env.COMMAND_OR_INPUT == 1){
+    if((process.env.ACTION_TO_DO == 1) || (process.env.ACTION_TO_DO == 2)){
+      if(process.env.ACTION_TO_DO == 1){
+        getMusic(chatid, text);
+        process.env.ACTION_TO_DO = 0;
+      }
+      if(process.env.ACTION_TO_DO == 2){
+        sendText(chatid, "Comando di prova eseguito con successo");
+        process.env.ACTION_TO_DO = 0;
+      }
+    }else{
+      sendText(chatid, "Comando non disponibile.");
+    }
+	}
 	res.end();
   
 });
@@ -59,14 +88,15 @@ function getMusic(chatId, text){
 	      chat_id: chatId,
   }
   
-  console.log(text);
-  var searchString = text.replace(" ","+");
-  console.log(searchString);
+  // console.log(text);
+  var searchString = text;
+  searchString = searchString.replace(/\s/g,"+");
+  // console.log(searchString);
   
   const clientreq = https.request({
     method: 'GET',
     host: 'itunes.apple.com',
-    path: '/search?term='+ searchString +'&attributeType=music&limit=5',
+    path: '/search?term='+ searchString +'&attributeType=music&limit=10',
     headers: {
 	    'Content-Type':'application/json',
     },	  
@@ -98,7 +128,7 @@ function getMusic(chatId, text){
           string += "\nTitolo: " + j.results[i].trackName;
           string += "\nAlbum:  " + j.results[i].collectionName;
           string += "\nAutore: " + j.results[i].artistName;
-          string += "\nPrezzo: " + j.results[i].trackPrice;
+          string += "\nPrezzo: " + j.results[i].trackPrice+ "€";
           string += "\n";
         }
       }
