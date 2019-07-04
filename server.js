@@ -154,7 +154,7 @@ function getArtistPageByName(chatId, text){
   const clientreq = https.request({
     method: 'GET',
     host: 'itunes.apple.com',
-    path: '/search?term='+ searchString +'&attributeType=allArtist&entity=allArtist',
+    path: '/search?term='+ searchString +'&attributeType=allArtist&entity=allArtist&limit=5',
     headers: {
 	    'Content-Type':'application/json',
     },	  
