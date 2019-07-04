@@ -29,8 +29,8 @@ app.post('/telegram', (req, res) => {
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 1;
   }
-  if(text == "/comandodiprova"){
-    sendText(chatid, "Stai eseguendo un comando di prova");
+  if(text == "/getartistpagebyname"){
+    sendText(chatid, "Digita il nome dell'autore");
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 2;
   }
@@ -38,11 +38,11 @@ app.post('/telegram', (req, res) => {
   if(process.env.COMMAND_OR_INPUT == 1){
     if((process.env.ACTION_TO_DO == 1) || (process.env.ACTION_TO_DO == 2)){
       if(process.env.ACTION_TO_DO == 1){
-        getMusic(chatid, text);
+        getMusicByParameter(chatid, text);
         process.env.ACTION_TO_DO = 0;
       }
       if(process.env.ACTION_TO_DO == 2){
-        sendText(chatid, "Comando di prova eseguito con successo");
+        getArtistPageByName(chatid, text);
         process.env.ACTION_TO_DO = 0;
       }
     }else{
@@ -83,7 +83,7 @@ function sendText(chatId, text){
   clientreq.end(); // questa chiamata esegue la richiesta
 }
 
-function getMusic(chatId, text){
+function getMusicByParameter(chatId, text){
   const requestBody = { 
 	      chat_id: chatId,
   }
@@ -129,6 +129,62 @@ function getMusic(chatId, text){
           string += "\nAlbum:  " + j.results[i].collectionName;
           string += "\nAutore: " + j.results[i].artistName;
           string += "\nPrezzo: " + j.results[i].trackPrice+ "€";
+		  string += "\nLink:   " + j.results[i].trackViewUrl;
+          string += "\n";
+        }
+      }
+      sendText(chatId, string);
+    });
+  });
+	
+  clientreq.end(); // questa chiamata esegue la richiesta
+
+}
+
+function getArtistPageByName(chatId, text){
+  const requestBody = { 
+	      chat_id: chatId,
+  }
+  
+  // console.log(text);
+  var searchString = text;
+  searchString = searchString.replace(/\s/g,"+");
+  // console.log(searchString);
+  
+  const clientreq = https.request({
+    method: 'GET',
+    host: 'itunes.apple.com',
+    path: '/search?term='+ searchString +'&attributeType=allArtist&entity=allArtist',
+    headers: {
+	    'Content-Type':'application/json',
+    },	  
+  }, function(resp) {
+    // Questa funzione viene richiamata a richiesta eseguita
+    if(resp.statusCode != 200) {
+      console.log("Richiesta HTTP iTunes fallita");
+      console.log(resp.statusCode);
+      return;
+    }
+    console.log("Richiesta HTTP iTunes riuscita");
+    
+    var body = '';
+    resp.on('data', function(d) {
+        body += d;
+    });
+    resp.on('end', function() {
+      // Ora body contiene il contenuto (corpo) della risposta
+      // console.log("Risposta da API Telegram: " + body);
+      
+      const j = JSON.parse(body);
+      // console.log(j);
+      var string = '';
+      if(j.resultCount == 0)
+        string += "Nessun risultato disponibile";
+      else{
+        string += "Lista artisti\n"
+        for(var i=0; i < j.resultCount; i++){
+          string += "\nNome: " + j.results[i].artistName;
+          string += "\nLink pagina iTunes: "+j.results[i].artistLinkUrl;
           string += "\n";
         }
       }
