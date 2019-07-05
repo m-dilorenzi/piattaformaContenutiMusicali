@@ -20,7 +20,7 @@ app.post('/telegram', (req, res) => {
   process.env.COMMAND_OR_INPUT = 1;
   
   if(text == "/start"){
-    sendText(chatid, "Benvenuto nel bot. Visita la lista dei comandi.");
+    sendText(chatid, "Benvenuto nel bot. Digita il comando /help per visualizzare i possibili comandi che il bot mette a disposizione.");
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 0;
   }
@@ -34,9 +34,13 @@ app.post('/telegram', (req, res) => {
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 2;
   }
+  if(text == "/getartistpagebyname"){
+    showInformation(chatid);
+    process.env.ACTION_TO_DO = -1;
+  }
   
   if(process.env.COMMAND_OR_INPUT == 1){
-    if((process.env.ACTION_TO_DO == 1) || (process.env.ACTION_TO_DO == 2)){
+    if((process.env.ACTION_TO_DO == 1) || (process.env.ACTION_TO_DO == 2) || (process.env.ACTION_TO_DO == -1)){
       if(process.env.ACTION_TO_DO == 1){
         getMusicByParameter(chatid, text);
         process.env.ACTION_TO_DO = 0;
@@ -45,10 +49,13 @@ app.post('/telegram', (req, res) => {
         getArtistPageByName(chatid, text);
         process.env.ACTION_TO_DO = 0;
       }
+	  
+	  // se l'utente ha eseguito il comando /help, il bot non si aspetter? un altro messaggio 
+	  
     }else{
       sendText(chatid, "Comando non disponibile.");
     }
-	}
+  }
 	res.end();
   
 });
@@ -194,4 +201,21 @@ function getArtistPageByName(chatId, text){
 	
   clientreq.end(); // questa chiamata esegue la richiesta
 
+}
+
+
+function showInformation(chatId){
+  var string = "Benvenuto nel bot FindYourFavouriteMusic!";
+  string += "\nI possibili comandi sono:";
+  string += "\n1. /searchsongbyparameter";
+  string += "\n  Permette di ricercare una canzone o una lista di canzoni tramite ";
+  string += "parametri come nome della canzone, artista, album, ecc.ecc. La ricerca ";
+  string += "pu? essere eseguita anche tramite un insieme di termini.";
+  string += "\n2. /getartistpagebyname";
+  string += "\n  Permette di ricercare la pagina iTunes di un cantante ";
+  string += "(o le pagine nel caso in cui i risultati della ricerca siano pi? di uno) ";
+  string += "alla quale si potr? poi accedere successivamente tramite l'apposito link ";
+  string += "che verr? mostrato.";
+  
+  sendText(chatId, string);
 }
