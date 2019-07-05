@@ -34,7 +34,7 @@ app.post('/telegram', (req, res) => {
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 2;
   }
-  if(text == "/getartistpagebyname"){
+  if(text == "/help"){
     showInformation(chatid);
     process.env.ACTION_TO_DO = -1;
   }
