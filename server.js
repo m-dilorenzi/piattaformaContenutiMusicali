@@ -49,8 +49,10 @@ app.post('/telegram', (req, res) => {
         getArtistPageByName(chatid, text);
         process.env.ACTION_TO_DO = 0;
       }
-	  
-	  // se l'utente ha eseguito il comando /help, il bot non si aspetter? un altro messaggio 
+
+	  if(process.env.ACTION_TO_DO == -1){
+        process.env.ACTION_TO_DO = 0;
+      } 
 	  
     }else{
       sendText(chatid, "Comando non disponibile.");
@@ -210,12 +212,12 @@ function showInformation(chatId){
   string += "\n1. /searchsongbyparameter";
   string += "\n  Permette di ricercare una canzone o una lista di canzoni tramite ";
   string += "parametri come nome della canzone, artista, album, ecc.ecc. La ricerca ";
-  string += "pu? essere eseguita anche tramite un insieme di termini.";
+  string += "puo' essere eseguita anche tramite un insieme di termini.";
   string += "\n2. /getartistpagebyname";
   string += "\n  Permette di ricercare la pagina iTunes di un cantante ";
-  string += "(o le pagine nel caso in cui i risultati della ricerca siano pi? di uno) ";
-  string += "alla quale si potr? poi accedere successivamente tramite l'apposito link ";
-  string += "che verr? mostrato.";
+  string += "(o le pagine nel caso in cui i risultati della ricerca siano piu' di uno) ";
+  string += "alla quale si potra' poi accedere successivamente tramite l'apposito link ";
+  string += "che verra' mostrato.";
   
   sendText(chatId, string);
 }
