@@ -34,13 +34,23 @@ app.post('/telegram', (req, res) => {
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 2;
   }
+  
+  if(text == "/searchyoutubevideos"){
+    sendText(chatid, "Digita i termini della ricerca");
+    process.env.COMMAND_OR_INPUT = 0;
+    process.env.ACTION_TO_DO = 3;
+  }
+  
   if(text == "/help"){
     showInformation(chatid);
     process.env.ACTION_TO_DO = -1;
   }
   
   if(process.env.COMMAND_OR_INPUT == 1){
-    if((process.env.ACTION_TO_DO == 1) || (process.env.ACTION_TO_DO == 2) || (process.env.ACTION_TO_DO == -1)){
+    if((process.env.ACTION_TO_DO == -1) ||
+       (process.env.ACTION_TO_DO == 1) || 
+       (process.env.ACTION_TO_DO == 2)||
+       (process.env.ACTION_TO_DO == 3)){
       if(process.env.ACTION_TO_DO == 1){
         getMusicByParameter(chatid, text);
         process.env.ACTION_TO_DO = 0;
@@ -49,8 +59,13 @@ app.post('/telegram', (req, res) => {
         getArtistPageByName(chatid, text);
         process.env.ACTION_TO_DO = 0;
       }
+      
+      if(process.env.ACTION_TO_DO == 3){
+        searchYoutubeVideos(chatid, text);
+        process.env.ACTION_TO_DO = 0;
+      }
 
-	  if(process.env.ACTION_TO_DO == -1){
+	    if(process.env.ACTION_TO_DO == -1){
         process.env.ACTION_TO_DO = 0;
       } 
 	  
@@ -123,8 +138,6 @@ function getMusicByParameter(chatId, text){
         body += d;
     });
     resp.on('end', function() {
-      // Ora body contiene il contenuto (corpo) della risposta
-      // console.log("Risposta da API Telegram: " + body);
       
       const j = JSON.parse(body);
       // console.log(j);
@@ -181,8 +194,6 @@ function getArtistPageByName(chatId, text){
         body += d;
     });
     resp.on('end', function() {
-      // Ora body contiene il contenuto (corpo) della risposta
-      // console.log("Risposta da API Telegram: " + body);
       
       const j = JSON.parse(body);
       // console.log(j);
@@ -218,6 +229,56 @@ function showInformation(chatId){
   string += "(o le pagine nel caso in cui i risultati della ricerca siano piu' di uno) ";
   string += "alla quale si potra' poi accedere successivamente tramite l'apposito link ";
   string += "che verra' mostrato.";
+  string += "\n3. /searchyoutubevideos";
+  string += "\n  Mostra i 10 video ordinati in base al numero di visulizzazioni che soddisfano ";
+  string += "i requisiti specificati nella ricerca.";
   
   sendText(chatId, string);
+}
+
+function searchYoutubeVideos(chatId, text) {
+  
+  var searchString = text;
+  searchString = searchString.replace(/\s/g,"+");
+  
+  const clientreq = https.request({
+    method: 'GET',
+    host: 'www.googleapis.com',
+    path: 'https://www.googleapis.com/youtube/v3/search?part=id&q='+searchString+'&type=video&maxResults=10'+
+          '&key='+process.env.YOUTUBEKEY,
+    headers: {
+	    'Content-Type':'application/json',
+    },	  
+  }, function(resp) {
+    // Questa funzione viene richiamata a richiesta eseguita
+    if(resp.statusCode != 200) {
+      console.log("Richiesta HTTP YoutubeAPI fallita");
+      console.log(resp.statusCode);
+      return;
+    }
+    console.log("Richiesta HTTP YoutubeAPI riuscita");
+    
+    var body = '';
+    resp.on('data', function(d) {
+        body += d;
+    });
+    resp.on('end', function() {
+      
+      const j = JSON.parse(body);
+      //console.log(j);
+      var string = '';
+      if(j.totalResults == 0)
+        string += "Nessun risultato disponibile";
+      else{
+        string += "Lista video\n";
+        for(var i=0; i < 10; i++){
+          string += "\n"+(i+1)+". www.youtube.com/watch?v=" + j.items[i].id.videoId +" \n"
+        }
+      }
+      sendText(chatId, string);
+    });
+  });
+	
+  clientreq.end(); // questa chiamata esegue la richiesta
+  
 }
