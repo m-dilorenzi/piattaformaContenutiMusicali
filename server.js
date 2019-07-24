@@ -13,7 +13,7 @@ const https = require('https');
 app.post('/telegram', (req, res) => {
 	console.log("Richiesta: " + JSON.stringify(req.body));
 	const chatid = req.body.message.chat.id;
-	const text = req.body.message.text.toLowerCase();
+  const text = req.body.message.text;
 	
 	console.log("Utente in chat " + chatid + " ha scritto '" + text + "'");
 	
@@ -311,7 +311,7 @@ function searchVideoStatistics(chatId, text){
     resp.on('end', function() {
       
       const j = JSON.parse(body);
-      console.log(j);
+      //console.log(j);
       
       var string = '';
       if(j.totalResults == 0)
