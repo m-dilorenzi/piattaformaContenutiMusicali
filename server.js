@@ -244,7 +244,7 @@ function searchYoutubeVideos(chatId, text) {
   const clientreq = https.request({
     method: 'GET',
     host: 'www.googleapis.com',
-    path: 'https://www.googleapis.com/youtube/v3/search?part=id&q='+searchString+'&type=video&maxResults=10'+
+    path: 'https://www.googleapis.com/youtube/v3/search?part=id&q='+searchString+'&type=video&maxResults=5'+
           '&key='+process.env.YOUTUBEKEY,
     headers: {
 	    'Content-Type':'application/json',
@@ -266,19 +266,67 @@ function searchYoutubeVideos(chatId, text) {
       
       const j = JSON.parse(body);
       //console.log(j);
+      
+      var searchStringStatistics = '';
+      if(j.totalResults != 0){
+        for(var i=0; i < 5; i++){
+          searchStringStatistics += j.items[i].id.videoId;
+          if(i!=4)
+            searchStringStatistics += "%2C+";
+        }
+        searchVideoStatistics(chatId, searchStringStatistics);
+      }else{
+        return;
+      }
+    });
+  });
+	
+  clientreq.end(); // questa chiamata esegue la richiesta
+  
+}
+
+function searchVideoStatistics(chatId, text){
+  console.log("Esecuzione richiesta statistiche video");
+  const clientreq = https.request({
+    method: 'GET',
+    host: 'www.googleapis.com',
+    path: 'https://www.googleapis.com/youtube/v3/videos?part=snippet&id='+text+'&maxResults=5'+
+          '&key='+process.env.YOUTUBEKEY,
+    headers: {
+	    'Content-Type':'application/json',
+    },	  
+  }, function(resp) {
+    // Questa funzione viene richiamata a richiesta eseguita
+    if(resp.statusCode != 200) {
+      console.log("Richiesta HTTP YoutubeAPI Statistics fallita");
+      console.log(resp.statusCode);
+      return;
+    }
+    console.log("Richiesta HTTP YoutubeAPI Statistics riuscita");
+    
+    var body = '';
+    resp.on('data', function(d) {
+        body += d;
+    });
+    resp.on('end', function() {
+      
+      const j = JSON.parse(body);
+      console.log(j);
+      
       var string = '';
       if(j.totalResults == 0)
         string += "Nessun risultato disponibile";
       else{
         string += "Lista video\n";
-        for(var i=0; i < 10; i++){
-          string += "\n"+(i+1)+". www.youtube.com/watch?v=" + j.items[i].id.videoId +" \n"
+        for(var i=0; i < 5; i++){
+          string += "\n"+(i+1)+". Titolo: "+ j.items[i].snippet.title;
+          string += "\n     Link: www.youtube.com/watch?v=" + j.items[i].id +" \n\n"
         }
       }
       sendText(chatId, string);
     });
   });
 	
-  clientreq.end(); // questa chiamata esegue la richiesta
+  clientreq.end();
   
 }
