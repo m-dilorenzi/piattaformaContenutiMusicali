@@ -14,6 +14,9 @@ app.post('/telegram', (req, res) => {
 	console.log("Richiesta: " + JSON.stringify(req.body));
 	const chatid = req.body.message.chat.id;
   const text = req.body.message.text;
+  const clientid = req.body.message.from.id;
+  
+  console.log(clientid);
 	
 	console.log("Utente in chat " + chatid + " ha scritto '" + text + "'");
 	
@@ -34,23 +37,34 @@ app.post('/telegram', (req, res) => {
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 2;
   }
-  
   if(text == "/searchyoutubevideos"){
     sendText(chatid, "Digita i termini della ricerca");
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 3;
   }
-  
+  if(text == "/searchsongonspotify"){
+    if(clientid == process.env.ADMIN_ID){
+      sendText(chatid, "Digita i termini della ricerca");
+      process.env.COMMAND_OR_INPUT = 0;
+      process.env.ACTION_TO_DO = 4;
+    }else{
+      sendText(chatid, "Funzione riservata all'utente admin.");
+      process.env.COMMAND_OR_INPUT = 0;
+      process.env.ACTION_TO_DO = 0;
+    }
+  }
+
   if(text == "/help"){
     showInformation(chatid);
-    process.env.ACTION_TO_DO = -1;
+    process.env.COMMAND_OR_INPUT = 0;
+    process.env.ACTION_TO_DO = 0;
   }
   
   if(process.env.COMMAND_OR_INPUT == 1){
-    if((process.env.ACTION_TO_DO == -1) ||
-       (process.env.ACTION_TO_DO == 1) || 
-       (process.env.ACTION_TO_DO == 2)||
-       (process.env.ACTION_TO_DO == 3)){
+    if((process.env.ACTION_TO_DO == 1) || 
+       (process.env.ACTION_TO_DO == 2) ||
+       (process.env.ACTION_TO_DO == 3) ||
+       (process.env.ACTION_TO_DO == 4)){
       if(process.env.ACTION_TO_DO == 1){
         getMusicByParameter(chatid, text);
         process.env.ACTION_TO_DO = 0;
@@ -59,16 +73,14 @@ app.post('/telegram', (req, res) => {
         getArtistPageByName(chatid, text);
         process.env.ACTION_TO_DO = 0;
       }
-      
       if(process.env.ACTION_TO_DO == 3){
         searchYoutubeVideos(chatid, text);
         process.env.ACTION_TO_DO = 0;
       }
-
-	    if(process.env.ACTION_TO_DO == -1){
+      if(process.env.ACTION_TO_DO == 4){
+        searchSongOnSpotify(chatid, text);
         process.env.ACTION_TO_DO = 0;
-      } 
-	  
+      }
     }else{
       sendText(chatid, "Comando non disponibile.");
     }
@@ -326,7 +338,47 @@ function searchVideoStatistics(chatId, text){
       sendText(chatId, string);
     });
   });
-	
-  clientreq.end();
+  clientreq.end(); // questa chiamata esegue la richiesta
+}
+
+function searchSongOnSpotify(chatId, text){
+  var searchString = text;
+  searchString = searchString.replace(/\s/g,"+");
   
+  const clientreq = https.request({
+    method: 'GET',
+    host: 'api.spotify.com',
+    path: '/v1/search?q='+searchString+'&type=track&limit=5&access_token='+process.env.SPOTIFYKEY,
+    headers: {
+	    'Content-Type':'application/json',
+    },	  
+  }, function(resp) {
+    // Questa funzione viene richiamata a richiesta eseguita
+    if(resp.statusCode != 200) {
+      console.log("Richiesta HTTP Spotify fallita");
+      console.log(resp.statusCode);
+      return;
+    }
+    console.log("Richiesta HTTP Spotify riuscita");
+    
+    var body = '';
+    resp.on('data', function(d) {
+        body += d;
+    });
+    resp.on('end', function() {
+      
+      const j = JSON.parse(body);
+      // console.log(j);
+      var string = '';
+      string += "Lista canzoni\n"
+      
+      for(var i=0; i<j.tracks.limit && i<j.tracks.total;i++){
+        string += "\n"+(i+1)+". Titolo: "+j.tracks.items[i].name;
+        string += "\n     Autore: "+j.tracks.items[i].artists[0].name;
+        string += "\n     Link: "+j.tracks.items[i].external_urls.spotify;
+      }
+      sendText(chatId, string);
+    });
+  });
+  clientreq.end(); // questa chiamata esegue la richiesta
 }
