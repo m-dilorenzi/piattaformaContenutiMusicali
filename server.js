@@ -242,8 +242,11 @@ function showInformation(chatId){
   string += "alla quale si potra' poi accedere successivamente tramite l'apposito link ";
   string += "che verra' mostrato.";
   string += "\n3. /searchyoutubevideos";
-  string += "\n  Mostra i 10 video ordinati in base al numero di visulizzazioni che soddisfano ";
+  string += "\n  Mostra i primi 5 video su YouTube che soddisfano ";
   string += "i requisiti specificati nella ricerca.";
+  string += "\n4. /searchsongonspotify";
+  string += "\n  Mostra al pi? 5 canzoni con il rispettivo link di Spotify che ";
+  string += "soddisfano i requisiti specificati nella ricerca dall'utente.";
   
   sendText(chatId, string);
 }
