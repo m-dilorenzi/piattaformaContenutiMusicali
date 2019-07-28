@@ -1,5 +1,6 @@
 const util = require('util');
 const express = require('express');
+var querystring = require('querystring');
 const app = express();
 
 // Includiamo la libreria "body-parser" per gestire le richieste in JSON.
@@ -15,8 +16,6 @@ app.post('/telegram', (req, res) => {
 	const chatid = req.body.message.chat.id;
   const text = req.body.message.text;
   const clientid = req.body.message.from.id;
-  
-  console.log(clientid);
 	
 	console.log("Utente in chat " + chatid + " ha scritto '" + text + "'");
 	
@@ -78,7 +77,14 @@ app.post('/telegram', (req, res) => {
         process.env.ACTION_TO_DO = 0;
       }
       if(process.env.ACTION_TO_DO == 4){
-        searchSongOnSpotify(chatid, text);
+        checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
+        if(process.env.TOKEN_VALIDITY == "NO"){
+          getNewAccessToken();
+          console.log("Nuovo token ottenuto.");
+          process.env.TOKEN_VALIDITY == "YES"
+          console.log("Token valido: "+process.env.TOKEN_VALIDITY);
+        }
+        searchSongOnSpotify(chatid, text, process.env.SPOTIFY_ACCESS_TOKEN);
         process.env.ACTION_TO_DO = 0;
       }
     }else{
@@ -109,20 +115,14 @@ function sendText(chatId, text){
   }, function(resp) {
     // Questa funzione viene richiamata a richiesta eseguita
     if(resp.statusCode != 200) {
-      console.log("Richiesta HTTP fallita");
       return;
-    }
-    console.log("Richiesta HTTP riuscita");
-       
+    }  
   });
   clientreq.write(JSON.stringify(requestBody));	
   clientreq.end(); // questa chiamata esegue la richiesta
 }
 
 function getMusicByParameter(chatId, text){
-  const requestBody = { 
-	      chat_id: chatId,
-  }
   
   // console.log(text);
   var searchString = text;
@@ -176,9 +176,6 @@ function getMusicByParameter(chatId, text){
 }
 
 function getArtistPageByName(chatId, text){
-  const requestBody = { 
-	      chat_id: chatId,
-  }
   
   // console.log(text);
   var searchString = text;
@@ -344,14 +341,14 @@ function searchVideoStatistics(chatId, text){
   clientreq.end(); // questa chiamata esegue la richiesta
 }
 
-function searchSongOnSpotify(chatId, text){
+function searchSongOnSpotify(chatId, text, token){
   var searchString = text;
   searchString = searchString.replace(/\s/g,"+");
   
   const clientreq = https.request({
     method: 'GET',
     host: 'api.spotify.com',
-    path: '/v1/search?q='+searchString+'&type=track&limit=5&access_token='+process.env.SPOTIFYKEY,
+    path: '/v1/search?q='+searchString+'&type=track&limit=5&access_token='+token,
     headers: {
 	    'Content-Type':'application/json',
     },	  
@@ -382,6 +379,68 @@ function searchSongOnSpotify(chatId, text){
       }
       sendText(chatId, string);
     });
+  });
+  clientreq.end(); // questa chiamata esegue la richiesta
+}
+
+function getNewAccessToken(){
+  var bodyRequest = querystring.stringify({
+    grant_type: 'refresh_token',
+    refresh_token: process.env.SPOTIFYKEYREFRESH
+  });
+  
+  const clientreq = https.request({
+    method: 'POST',
+    host: 'accounts.spotify.com',
+    path: '/api/token',
+    headers: {
+      'Content-Type':'application/x-www-form-urlencoded',
+	    'Authorization':'Basic '+process.env.SPOTIFYBASE64ID
+    },	  
+  }, function(resp) {
+    // Questa funzione viene richiamata a richiesta eseguita
+    if(resp.statusCode != 200) {
+      console.log("Richiesta HTTP Spotify NewToken fallita");
+      console.log(resp.statusCode);
+      return;
+    }
+    console.log("Richiesta HTTP Spotify NewToken riuscita");
+    
+    var body = '';
+    resp.on('data', function(d) {
+        body += d;
+    });
+    resp.on('end', function() {
+      
+      const j = JSON.parse(body);
+      var token = j.access_token;
+      process.env.SPOTIFY_ACCESS_TOKEN = token;
+    });
+  });
+  //console.log(clientreq);
+  clientreq.write(bodyRequest);
+  clientreq.end(); // questa chiamata esegue la richiesta
+  
+}
+
+function checkTokenValidity(token){
+  var searchString = "prova";
+  const clientreq = https.request({
+    method: 'GET',
+    host: 'api.spotify.com',
+    path: '/v1/search?q='+searchString+'&type=track&limit=5&access_token='+token,
+    headers: {
+	    'Content-Type':'application/json',
+    },	  
+  }, function(resp) {
+    // Questa funzione viene richiamata a richiesta eseguita
+    if(resp.statusCode != 200) {
+      console.log("Token non valido.");
+      console.log(resp.statusCode);
+      process.env.TOKEN_VALIDITY = "NO";
+      return;
+    }
+    console.log("Token valido.");
   });
   clientreq.end(); // questa chiamata esegue la richiesta
 }
