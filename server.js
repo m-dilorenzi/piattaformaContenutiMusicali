@@ -18,7 +18,7 @@ app.post('/telegram', (req, res) => {
   const clientid = req.body.message.from.id;
 	
 	console.log("Utente in chat " + chatid + " ha scritto '" + text + "'");
-	
+  
   process.env.COMMAND_OR_INPUT = 1;
   
   if(text == "/start"){
@@ -43,6 +43,7 @@ app.post('/telegram', (req, res) => {
   }
   if(text == "/searchsongonspotify"){
     if(clientid == process.env.ADMIN_ID){
+      checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
       sendText(chatid, "Digita i termini della ricerca");
       process.env.COMMAND_OR_INPUT = 0;
       process.env.ACTION_TO_DO = 4;
@@ -77,15 +78,13 @@ app.post('/telegram', (req, res) => {
         process.env.ACTION_TO_DO = 0;
       }
       if(process.env.ACTION_TO_DO == 4){
-        checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
-        if(process.env.TOKEN_VALIDITY == "NO"){
+        if(process.env.TOKEN_VALIDITY == 0){
           getNewAccessToken();
           console.log("Nuovo token ottenuto.");
-          process.env.TOKEN_VALIDITY == "YES"
-          console.log("Token valido: "+process.env.TOKEN_VALIDITY);
+          process.env.TOKEN_VALIDITY == 1;
         }
-        searchSongOnSpotify(chatid, text, process.env.SPOTIFY_ACCESS_TOKEN);
         process.env.ACTION_TO_DO = 0;
+        searchSongOnSpotify(chatid, text, process.env.SPOTIFY_ACCESS_TOKEN);
       }
     }else{
       sendText(chatid, "Comando non disponibile.");
@@ -424,6 +423,7 @@ function getNewAccessToken(){
 }
 
 function checkTokenValidity(token){
+  process.env.LOCK = 1;
   var searchString = "prova";
   const clientreq = https.request({
     method: 'GET',
@@ -435,9 +435,8 @@ function checkTokenValidity(token){
   }, function(resp) {
     // Questa funzione viene richiamata a richiesta eseguita
     if(resp.statusCode != 200) {
+      process.env.TOKEN_VALIDITY = 0;
       console.log("Token non valido.");
-      console.log(resp.statusCode);
-      process.env.TOKEN_VALIDITY = "NO";
       return;
     }
     console.log("Token valido.");
