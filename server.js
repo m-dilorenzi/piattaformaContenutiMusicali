@@ -438,11 +438,9 @@ function checkTokenValidity(token){
   }, function(resp) {
     // Questa funzione viene richiamata a richiesta eseguita
     if(resp.statusCode != 200) {
-      process.env.TOKEN_VALIDITY = 0;
       getNewAccessToken();
     }else{
       console.log("Token valido.");
-      process.env.TOKEN_VALIDITY = 1;
     }
   });
   clientreq.end(); // questa chiamata esegue la richiesta
