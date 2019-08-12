@@ -10,6 +10,11 @@ app.use(bodyparser.json());
 // Includiamo il modulo "request" per effettuare richieste HTTP
 const https = require('https');
 
+
+setInterval(function(){
+  checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
+},120000);
+
 // Webhook per Telegram
 app.post('/telegram', (req, res) => {
 	console.log("Richiesta: " + JSON.stringify(req.body));
@@ -43,7 +48,6 @@ app.post('/telegram', (req, res) => {
   }
   if(text == "/searchsongonspotify"){
     if(clientid == process.env.ADMIN_ID){
-      checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
       sendText(chatid, "Digita i termini della ricerca");
       process.env.COMMAND_OR_INPUT = 0;
       process.env.ACTION_TO_DO = 4;
@@ -78,13 +82,11 @@ app.post('/telegram', (req, res) => {
         process.env.ACTION_TO_DO = 0;
       }
       if(process.env.ACTION_TO_DO == 4){
-        if(process.env.TOKEN_VALIDITY == 0){
-          getNewAccessToken();
-          console.log("Nuovo token ottenuto.");
-          process.env.TOKEN_VALIDITY == 1;
+        if(process.env.TOKEN_VALIDITY == 1){
+          console.log("Eseguo la ricerca su Spotify");
+          process.env.ACTION_TO_DO = 0;
+          searchSongOnSpotify(chatid, text, process.env.SPOTIFY_ACCESS_TOKEN);
         }
-        process.env.ACTION_TO_DO = 0;
-        searchSongOnSpotify(chatid, text, process.env.SPOTIFY_ACCESS_TOKEN);
       }
     }else{
       sendText(chatid, "Comando non disponibile.");
@@ -414,6 +416,7 @@ function getNewAccessToken(){
       const j = JSON.parse(body);
       var token = j.access_token;
       process.env.SPOTIFY_ACCESS_TOKEN = token;
+      console.log("Nuovo token ottenuto.");
     });
   });
   //console.log(clientreq);
@@ -436,10 +439,11 @@ function checkTokenValidity(token){
     // Questa funzione viene richiamata a richiesta eseguita
     if(resp.statusCode != 200) {
       process.env.TOKEN_VALIDITY = 0;
-      console.log("Token non valido.");
-      return;
+      getNewAccessToken();
+    }else{
+      console.log("Token valido.");
+      process.env.TOKEN_VALIDITY = 1;
     }
-    console.log("Token valido.");
   });
   clientreq.end(); // questa chiamata esegue la richiesta
 }
