@@ -82,11 +82,9 @@ app.post('/telegram', (req, res) => {
         process.env.ACTION_TO_DO = 0;
       }
       if(process.env.ACTION_TO_DO == 4){
-        if(process.env.TOKEN_VALIDITY == 1){
-          console.log("Eseguo la ricerca su Spotify");
-          process.env.ACTION_TO_DO = 0;
-          searchSongOnSpotify(chatid, text, process.env.SPOTIFY_ACCESS_TOKEN);
-        }
+        console.log("Eseguo la ricerca su Spotify");
+        process.env.ACTION_TO_DO = 0;
+        searchSongOnSpotify(chatid, text, process.env.SPOTIFY_ACCESS_TOKEN);
       }
     }else{
       sendText(chatid, "Comando non disponibile.");
