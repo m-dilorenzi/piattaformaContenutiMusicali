@@ -10,11 +10,6 @@ app.use(bodyparser.json());
 // Includiamo il modulo "request" per effettuare richieste HTTP
 const https = require('https');
 
-
-setInterval(function(){
-  checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
-},120000);
-
 // Webhook per Telegram
 app.post('/telegram', (req, res) => {
 	console.log("Richiesta: " + JSON.stringify(req.body));
@@ -30,27 +25,32 @@ app.post('/telegram', (req, res) => {
     sendText(chatid, "Benvenuto nel bot. Digita il comando /help per visualizzare i possibili comandi che il bot mette a disposizione.");
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 0;
+    checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
   }
   if(text == "/searchsongbyparameter"){
     sendText(chatid, "Digita i termini con cui eseguire la ricerca");
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 1;
+    checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
   }
   if(text == "/getartistpagebyname"){
     sendText(chatid, "Digita il nome dell'autore");
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 2;
+    checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
   }
   if(text == "/searchyoutubevideos"){
     sendText(chatid, "Digita i termini della ricerca");
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 3;
+    checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
   }
   if(text == "/searchsongonspotify"){
     if(clientid == process.env.ADMIN_ID){
       sendText(chatid, "Digita i termini della ricerca");
       process.env.COMMAND_OR_INPUT = 0;
       process.env.ACTION_TO_DO = 4;
+      checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
     }else{
       sendText(chatid, "Funzione riservata all'utente admin.");
       process.env.COMMAND_OR_INPUT = 0;
@@ -62,6 +62,7 @@ app.post('/telegram', (req, res) => {
     showInformation(chatid);
     process.env.COMMAND_OR_INPUT = 0;
     process.env.ACTION_TO_DO = 0;
+    checkTokenValidity(process.env.SPOTIFY_ACCESS_TOKEN);
   }
   
   if(process.env.COMMAND_OR_INPUT == 1){
@@ -161,7 +162,7 @@ function getMusicByParameter(chatId, text){
           string += "\nTitolo: " + j.results[i].trackName;
           string += "\nAlbum:  " + j.results[i].collectionName;
           string += "\nAutore: " + j.results[i].artistName;
-          string += "\nPrezzo: " + j.results[i].trackPrice+ "€";
+          string += "\nPrezzo: " + j.results[i].trackPrice+ "?";
 		  string += "\nLink:   " + j.results[i].trackViewUrl;
           string += "\n";
         }
@@ -241,7 +242,7 @@ function showInformation(chatId){
   string += "\n  Mostra i primi 5 video su YouTube che soddisfano ";
   string += "i requisiti specificati nella ricerca.";
   string += "\n4. /searchsongonspotify";
-  string += "\n  Mostra al pi? 5 canzoni con il rispettivo link di Spotify che ";
+  string += "\n  Mostra al piu' 5 canzoni con il rispettivo link di Spotify che ";
   string += "soddisfano i requisiti specificati nella ricerca dall'utente.";
   
   sendText(chatId, string);
@@ -376,6 +377,8 @@ function searchSongOnSpotify(chatId, text, token){
         string += "\n     Autore: "+j.tracks.items[i].artists[0].name;
         string += "\n     Link: "+j.tracks.items[i].external_urls.spotify;
       }
+      if(string=="Lista canzoni\n")
+        string="Nessun risultato disponibile.";
       sendText(chatId, string);
     });
   });
@@ -439,6 +442,7 @@ function checkTokenValidity(token){
       getNewAccessToken();
     }else{
       console.log("Token valido.");
+      console.log(process.env.SPOTIFY_ACCESS_TOKEN);
     }
   });
   clientreq.end(); // questa chiamata esegue la richiesta
