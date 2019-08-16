@@ -277,19 +277,20 @@ function searchYoutubeVideos(chatId, text) {
     resp.on('end', function() {
       
       const j = JSON.parse(body);
-      //console.log(j);
+      console.log(j);
       
       var searchStringStatistics = '';
-      if(j.totalResults != 0){
+      if(j.pageInfo.totalResults != 0){
         for(var i=0; i < 5; i++){
           searchStringStatistics += j.items[i].id.videoId;
           if(i!=4)
             searchStringStatistics += "%2C+";
         }
+        console.log(searchStringStatistics);
         searchVideoStatistics(chatId, searchStringStatistics);
       }else{
-		var string = "Nessun risultato disponibile."; 
-		sendText(chatId, string);
+		    var string = "Nessun risultato disponibile."; 
+		    sendText(chatId, string);
       }
     });
   });
@@ -327,7 +328,7 @@ function searchVideoStatistics(chatId, text){
       //console.log(j);
       
       var string = '';
-      if(j.totalResults == 0)
+      if(j.pageInfo.totalResults == 0)
         string += "Nessun risultato disponibile";
       else{
         string += "Lista video\n";
@@ -336,8 +337,6 @@ function searchVideoStatistics(chatId, text){
           string += "\n     Link: www.youtube.com/watch?v=" + j.items[i].id +" \n\n"
         }
       }
-	  if(string=="Lista video\n")
-		  string = "Nessun risultato disponibile."; 
       sendText(chatId, string);
     });
   });
