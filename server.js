@@ -335,6 +335,8 @@ function searchVideoStatistics(chatId, text){
           string += "\n     Link: www.youtube.com/watch?v=" + j.items[i].id +" \n\n"
         }
       }
+	  if(string=="Lista video\n")
+		  string = "Nessun risultato disponibile."; 
       sendText(chatId, string);
     });
   });
