@@ -290,7 +290,6 @@ function searchYoutubeVideos(chatId, text) {
       }else{
 		var string = "Nessun risultato disponibile."; 
 		sendText(chatId, string);
-        return;
       }
     });
   });
