@@ -288,7 +288,7 @@ function searchYoutubeVideos(chatId, text) {
         }
         searchVideoStatistics(chatId, searchStringStatistics);
       }else{
-		string = "Nessun risultato disponibile."; 
+		var string = "Nessun risultato disponibile."; 
 		sendText(chatId, string);
         return;
       }
