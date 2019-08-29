@@ -15,9 +15,7 @@ app.post('/searchiTunesSong', (req, res) => {
   console.log("L'utente vuole cercare dei brani su iTunes");
 	var resultString;
   getMusicByParameter(text, function(result){
-    resultString = result;
-    console.log(resultString);
-    res.end(JSON.stringify(resultString));
+    res.end(result);
   });
 });
 
@@ -26,8 +24,7 @@ app.post('/searchiTunesArtist', (req, res) => {
   console.log("L'utente vuole cercare un artista su iTunes");
   var resultString;
 	getArtistPageByName(text, function(result){
-    resultString = result;
-    res.end(JSON.stringify(resultString));
+    res.end(result);
   });
 });
 
@@ -38,10 +35,16 @@ app.post('/searchYoutubeVideos', (req, res) => {
 	searchYoutubeVideos(text, function(initialResult){
     if(initialResult != "Nessun risultato disponibile."){
       searchVideoStatistics(initialResult, function(finalResult){
-        res.end(JSON.stringify(finalResult));
+        res.end(finalResult);
       });
     }else{
-      res.end(JSON.stringify("Nessun risultato disponibile."));
+      var obj = {
+        pageInfo:{
+          totalResults: 0
+        },
+        text: "Nessun risultato disponibile."
+      }
+      res.end(JSON.stringify(obj));
     }
   });
 });
@@ -52,7 +55,7 @@ app.post('/searchSongOnSpotify', (req, res) => {
   console.log("L'utente vuole cercare brani su Spotify");
   var resultString;
 	searchSongOnSpotify(text, token, function(result){
-    res.end(JSON.stringify(result));
+    res.end(result);
   });
 });
 
@@ -60,7 +63,7 @@ app.post('/help', (req, res) => {
   console.log("L'utente vuole eseguire il comando di help");
   var resultString;
 	showInformation(function(result){
-    res.end(JSON.stringify(result));
+    res.end(result);
   });
 });
 
@@ -91,24 +94,7 @@ function getMusicByParameter(text, result){
         body += d;
     });
     resp.on('end', function() {
-      
-      const j = JSON.parse(body);
-      //console.log(j);
-      var string = '';
-      if(j.resultCount == 0)
-        string += "Nessun risultato disponibile";
-      else{
-        string += "Lista canzoni\n"
-        for(var i=0; i < j.resultCount; i++){
-          string += "\nTitolo: " + j.results[i].trackName;
-          string += "\nAlbum:  " + j.results[i].collectionName;
-          string += "\nAutore: " + j.results[i].artistName;
-          string += "\nPrezzo: " + j.results[i].trackPrice+ "€";
-		      string += "\nLink:   " + j.results[i].trackViewUrl;
-          string += "\n";
-        }
-      }
-      result(string);
+      result(body);
     });
   });
   clientreq.end(); // questa chiamata esegue la richiesta
@@ -138,21 +124,7 @@ function getArtistPageByName(text, result){
         body += d;
     });
     resp.on('end', function() {
-      
-      const j = JSON.parse(body);
-      // console.log(j);
-      var string = '';
-      if(j.resultCount == 0)
-        string += "Nessun risultato disponibile";
-      else{
-        string += "Lista artisti\n"
-        for(var i=0; i < j.resultCount; i++){
-          string += "\nNome: " + j.results[i].artistName;
-          string += "\nLink pagina iTunes: "+j.results[i].artistLinkUrl;
-          string += "\n";
-        }
-      }
-      result(string);
+      result(body);
     });
   });
   clientreq.end(); // questa chiamata esegue la richiesta
@@ -229,21 +201,7 @@ function searchVideoStatistics(text, finalResult){
         body += d;
     });
     resp.on('end', function() {
-      
-      const j = JSON.parse(body);
-      //console.log(j);
-      
-      var string = '';
-      if(j.pageInfo.totalResults == 0)
-        string += "Nessun risultato disponibile";
-      else{
-        string += "Lista video\n";
-        for(var i=0; i < 5; i++){
-          string += "\n"+(i+1)+". Titolo: "+ j.items[i].snippet.title;
-          string += "\n     Link: www.youtube.com/watch?v=" + j.items[i].id +" \n\n"
-        }
-      }
-      finalResult(string);
+      finalResult(body);
     });
   });
   clientreq.end(); // questa chiamata esegue la richiesta
@@ -274,22 +232,7 @@ function searchSongOnSpotify(text, token, result){
         body += d;
     });
     resp.on('end', function() {
-      
-      const j = JSON.parse(body);
-      // console.log(j);
-      var string = '';
-      string += "Lista canzoni\n"
-      
-      for(var i=0; i<j.tracks.limit && i<j.tracks.total;i++){
-        string += "\n"+(i+1)+". Titolo: "+j.tracks.items[i].name;
-        string += "\n     Autore: "+j.tracks.items[i].artists[0].name;
-        string += "\n     Link: "+j.tracks.items[i].external_urls.spotify;
-      }
-      if(string=="Lista canzoni\n")
-        string="Nessun risultato disponibile.";
-      
-      result(string);
-      
+      result(body);
     });
   });
   clientreq.end(); // questa chiamata esegue la richiesta
@@ -314,5 +257,8 @@ function showInformation(result){
   string += "\n  Mostra al piu' 5 canzoni con il rispettivo link di Spotify che ";
   string += "soddisfano i requisiti specificati nella ricerca dall'utente.";
   
-  result(string);
+  var obj = {
+    text: string
+  }
+  result(JSON.stringify(obj));
 }
