@@ -10,8 +10,8 @@ app.use(bodyparser.json());
 // Includiamo il modulo "request" per effettuare richieste HTTP
 const https = require('https');
 
-app.post('/searchiTunesSong', (req, res) => {
-  var text = req.body.text;
+app.get('/searchiTunesSong/:text', (req, res) => {
+  var text = req.params.text;
   console.log("L'utente vuole cercare dei brani su iTunes");
 	var resultString;
   getMusicByParameter(text, function(result){
@@ -19,23 +19,23 @@ app.post('/searchiTunesSong', (req, res) => {
   });
 });
 
-app.post('/searchiTunesArtist', (req, res) => {
-  var text = req.body.text;
+app.get('/searchiTunesArtist/:text', (req, res) => {
+  var text = req.params.text;
   console.log("L'utente vuole cercare un artista su iTunes");
   var resultString;
 	getArtistPageByName(text, function(result){
-    res.end(JSON.stringify(result));
+    res.end(result);
   });
 });
 
-app.post('/searchYoutubeVideos', (req, res) => {
-  var text = req.body.text;
+app.get('/searchYoutubeVideos/:text', (req, res) => {
+  var text = req.params.text;
   console.log("L'utente vuole cercare video su YouTube");
   var resultString;
 	searchYoutubeVideos(text, function(initialResult){
     if(initialResult != "Nessun risultato disponibile."){
       searchVideoStatistics(initialResult, function(finalResult){
-        res.end(JSON.stringify(finalResult));
+        res.end(finalResult);
       });
     }else{
       var obj = {
@@ -49,17 +49,17 @@ app.post('/searchYoutubeVideos', (req, res) => {
   });
 });
 
-app.post('/searchSongOnSpotify', (req, res) => {
-  var text = req.body.text;
-  var token = req.body.token;
+app.get('/searchSongOnSpotify/:text/:token', (req, res) => {
+  var text = req.params.text;
+  var token = req.params.token;
   console.log("L'utente vuole cercare brani su Spotify");
   var resultString;
 	searchSongOnSpotify(text, token, function(result){
-    res.end(JSON.stringify(result));
+    res.end(result);
   });
 });
 
-app.post('/help', (req, res) => {
+app.get('/help', (req, res) => {
   console.log("L'utente vuole eseguire il comando di help");
   var resultString;
 	showInformation(function(result){
