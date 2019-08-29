@@ -24,7 +24,7 @@ app.post('/searchiTunesArtist', (req, res) => {
   console.log("L'utente vuole cercare un artista su iTunes");
   var resultString;
 	getArtistPageByName(text, function(result){
-    res.end(result);
+    res.end(JSON.stringify(result));
   });
 });
 
@@ -35,7 +35,7 @@ app.post('/searchYoutubeVideos', (req, res) => {
 	searchYoutubeVideos(text, function(initialResult){
     if(initialResult != "Nessun risultato disponibile."){
       searchVideoStatistics(initialResult, function(finalResult){
-        res.end(finalResult);
+        res.end(JSON.stringify(finalResult));
       });
     }else{
       var obj = {
@@ -55,7 +55,7 @@ app.post('/searchSongOnSpotify', (req, res) => {
   console.log("L'utente vuole cercare brani su Spotify");
   var resultString;
 	searchSongOnSpotify(text, token, function(result){
-    res.end(result);
+    res.end(JSON.stringify(result));
   });
 });
 
