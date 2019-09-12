@@ -38,13 +38,11 @@ app.get('/searchYoutubeVideos/:text', (req, res) => {
         res.end(finalResult);
       });
     }else{
-      var obj = {
-        pageInfo:{
-          totalResults: 0
-        },
-        text: "Nessun risultato disponibile."
-      }
-      res.end(JSON.stringify(obj));
+      var jsonObject={};
+      jsonObject.tipoRisultato = "YouTubeVideo";
+      jsonObject.risultatiTotali=0;
+      jsonObject["items"]=[];
+      res.end(JSON.stringify(jsonObject));
     }
   });
 });
@@ -76,7 +74,7 @@ function getMusicByParameter(text, result){
   const clientreq = https.request({
     method: 'GET',
     host: 'itunes.apple.com',
-    path: '/search?term='+ text +'&attributeType=music&limit=10',
+    path: '/search?term='+ text +'&attributeType=music&limit=5',
     headers: {
 	    'Content-Type':'application/json',
     },	  
@@ -94,7 +92,27 @@ function getMusicByParameter(text, result){
         body += d;
     });
     resp.on('end', function() {
-      result(body);
+      
+      const j = JSON.parse(body);
+      var string = '';
+      var jsonObject={};
+      jsonObject.tipoRisultato = "iTunesSong";
+      jsonObject.risultatiTotali=j.resultCount;
+      jsonObject["items"]=[];
+      if(j.resultCount != 0){
+        for(var i=0; i < j.resultCount; i++){
+          var song = {
+            nome: j.results[i].trackName,
+            album: j.results[i].collectionName,
+            autore: j.results[i].artistName,
+            prezzo: j.results[i].trackPrice+ "€",
+            link: j.results[i].trackViewUrl
+          }
+          jsonObject["items"].push(song);
+        }
+      }
+      //console.log(jsonObject);
+      result(JSON.stringify(jsonObject));
     });
   });
   clientreq.end(); // questa chiamata esegue la richiesta
@@ -124,7 +142,28 @@ function getArtistPageByName(text, result){
         body += d;
     });
     resp.on('end', function() {
-      result(body);
+      
+      const j = JSON.parse(body);
+      
+      var jsonObject={};
+      jsonObject.tipoRisultato = "iTunesArtist";
+      jsonObject.risultatiTotali=j.resultCount;
+      jsonObject["items"]=[];
+      
+      if(j.resultCount != 0){
+        for(var i=0; i < j.resultCount; i++){
+          var artist={
+            nome: j.results[i].artistName,
+            album: 0,
+            autore: 0,
+            prezzo: 0,
+            link: j.results[i].artistLinkUrl
+          }
+          jsonObject["items"].push(artist);
+        }
+      }
+      //console.log(jsonObject);
+      result(JSON.stringify(jsonObject));
     });
   });
   clientreq.end(); // questa chiamata esegue la richiesta
@@ -201,7 +240,28 @@ function searchVideoStatistics(text, finalResult){
         body += d;
     });
     resp.on('end', function() {
-      finalResult(body);
+      
+      const j = JSON.parse(body);
+      
+      var jsonObject={};
+      jsonObject.tipoRisultato = "YouTubeVideo";
+      jsonObject.risultatiTotali=j.pageInfo.totalResults;
+      jsonObject["items"]=[];
+      
+      if(j.pageInfo.totalResults != 0){
+        for(var i=0; i < 5; i++){
+          var video={
+            nome: j.items[i].snippet.title,
+            album: 0,
+            autore: 0,
+            prezzo: 0,
+            link: "www.youtube.com/watch?v=" + j.items[i].id
+          }
+          jsonObject["items"].push(video);
+        }
+      }
+      //console.log(jsonObject);
+      finalResult(JSON.stringify(jsonObject));
     });
   });
   clientreq.end(); // questa chiamata esegue la richiesta
@@ -231,8 +291,29 @@ function searchSongOnSpotify(text, token, result){
     resp.on('data', function(d) {
         body += d;
     });
-    resp.on('end', function() {
-      result(body);
+    resp.on('end', function() { 
+      
+      const j = JSON.parse(body);
+      
+      var jsonObject={};
+      jsonObject.tipoRisultato = "SpotifySong";
+      jsonObject["items"]=[];
+      var c = 0;
+      
+      for(var i=0; i<j.tracks.limit && i<j.tracks.total;i++){
+        c++;
+        var video={
+          nome: j.tracks.items[i].name,
+          album: 0,
+          autore: j.tracks.items[i].artists[0].name,
+          prezzo: 0,
+          link: j.tracks.items[i].external_urls.spotify
+        }
+        jsonObject["items"].push(video);
+      }
+      jsonObject.risultatiTotali=c;
+      //console.log(jsonObject);
+      result(JSON.stringify(jsonObject));
     });
   });
   clientreq.end(); // questa chiamata esegue la richiesta
@@ -258,6 +339,7 @@ function showInformation(result){
   string += "soddisfano i requisiti specificati nella ricerca dall'utente.";
   
   var obj = {
+    tipoRisultato: "text",
     text: string
   }
   result(JSON.stringify(obj));
