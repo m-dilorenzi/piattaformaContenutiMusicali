@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+
+<style>
+#customers {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+#customers td, #customers th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#customers tr:nth-child(even){background-color: #f2f2f2;}
+
+#customers tr:hover {background-color: #ddd;}
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+</style>
+
+
+<body>
+	<h1 style="color: #4CAF50;">Benvenuto nell'API PiattaformaContenutiMusicali!</h1>
+	<h2 style="color: #2e6c80;">I servizi messi a disposizione dall'API sono:</h2>
+<ul>
+	<li style="clear: both;"><img style="float: left;" src="https://cdn0.iconfinder.com/data/icons/entypo/92/help-512.png" width="45" />Help</li>
+	<br>
+  
+	<li style="clear: both;"><img style="float: left;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/ITunes_logo.svg/438px-ITunes_logo.svg.png" width="45" />Ricerca di una canzone su iTunes</li>
+	<br>
+  
+	<li style="clear: both;"><img style="float: left;" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/ITunes_logo.svg/438px-ITunes_logo.svg.png" alt="html cleaner" width="45" />Ricerca della pagina di artista su iTunes</li>
+	<br>
+  
+	<li style="clear: both;"><img style="float: left;" src="https://i.pinimg.com/originals/19/7b/36/197b365922d1ea3aa1a932ff9bbda4a6.png" alt="Word to html" width="45" /> Ricera video su YouTube</li>
+	<br>
+  
+	<li style="clear: both;"><img style="float: left;" src="https://cdn4.iconfinder.com/data/icons/various-icons-2/476/Spotify.png" width="45" /> Ricerca brani su Spotify</li>
+	<br>
+</ul>	
+	<h2 style="color: #2e6c80;">Composizione comandi:</h2>
+	<p>Specificare prima del path riportato nella seguente tabella l'inidirizzo: piattaformacontenutimusicali.herokuapp.com</p>
+
+	<table id="customers">
+		<tr>
+			<th>Comando</th>
+			<th>Parametri</th>
+			<th>Esempio</th>
+		</tr>
+		<tr>
+			<td>/help</td>
+			<td align="center">X</td>
+			<td>/help</td>
+		</tr>
+		<tr>
+			<td>/searchiTunesSong</td>
+			<td>
+				<ul>
+					<li>Nome, autore o album per la ricerca della canzone su iTunes</li>
+				</ul>
+			</td>
+			<td>/searchiTunesSong/ciao+coez</td>
+		</tr>
+		<tr>
+			<td>/searchiTunesArtist</td>
+			<td>
+				<ul>
+					<li>Nome dell'autore per la ricerca della pagina su iTunes</li>
+				</ul>
+			</td>
+			<td>/searchiTunesArtist/coez</td>
+		</tr>
+		<tr>
+			<td>/searchYoutubeVideos</td>
+			<td>
+				<ul>
+					<li>Nome del video utilizzato per la ricerca su YouTube</li>
+				</ul>
+			</td>
+			<td>/searchYoutubeVideos/vasco+rossi+sally</td>
+		</tr>
+		<tr>
+			<td>/searchSongOnSpotify</td>
+			<td>
+				<ul>
+					<li>Nome, autore o album per la ricerca della canzone su Spotify</li>
+					<li>Token di accesso per autorizzare la ricerca</li>
+				</ul>
+			</td>
+			<td>/searchSongOnSpotify/ciao+coez/rveklvbve42cif73rfbjbxfh3</td>
+		</tr>
+	</table>
+<body>
+
+
+
