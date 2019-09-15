@@ -11,7 +11,7 @@ app.use(bodyparser.json());
 const https = require('https');
 
 app.get('/', (req, res) => {
-  res.sendFile('index.html');
+  res.sendFile('index.html', { root: __dirname });
 });
 
 
