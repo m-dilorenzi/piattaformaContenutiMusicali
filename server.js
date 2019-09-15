@@ -10,6 +10,11 @@ app.use(bodyparser.json());
 // Includiamo il modulo "request" per effettuare richieste HTTP
 const https = require('https');
 
+app.get('/', (req, res) => {
+  res.sendFile('index.html');
+});
+
+
 app.get('/searchiTunesSong/:text', (req, res) => {
   var text = req.params.text;
   console.log("L'utente vuole cercare dei brani su iTunes");
