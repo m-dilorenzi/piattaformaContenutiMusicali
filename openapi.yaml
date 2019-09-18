@@ -89,107 +89,32 @@ paths:
               schema:
                 type: object
                 properties:
-                  resultCount: 
+                  tipoRisultato: 
+                    type: string
+                    example: iTunesSong
+                  risultatiTotali: 
                     type: integer
                     example: 1
-                  results:
+                  items:
                     type: array
                     items:
                       type: object
                       properties:
-                        wrapperType:
+                        nome:
                           type: string
-                          example: track
-                        kind:
+                          example: Ciao
+                        album:
                           type: string
-                          example: song
-                        artistId:
-                          type: integer
-                          example: 4527846
-                        collectionId:
-                          type: integer
-                          example: 4634565
-                        trackId:
-                          type: integer
-                          example: 8377437
-                        artistName:
+                          example: Faccio un casino
+                        autore:
                           type: string
-                          example: Vasco Rossi
-                        collectionName:
-                          type: string
-                          example: Nessun pericolo... per te
-                        trackName:
-                          type: string
-                          example: Sally
-                        collectionCensoredName:
-                          type: string
-                          example: Nessun pericolo... per te
-                        trackCensoredName:
-                          type: string
-                          example: Sally
-                        artistViewUrl:
-                          type: string
-                          example: https://music.apple.com/us/album/vasco-rossi/569865206?i=569865207&uo=4
-                        collectionViewUrl:
-                          type: string
-                          example: https://music.apple.com/us/album/vasco-rossi/569865206?i=569865207&uo=4
-                        trackViewUrl:
-                          type: string
-                          example: https://music.apple.com/us/album/vasco-rossi/569865206?i=569865207&uo=4
-                        previewUrl:
-                          type: string
-                          example: https://audio-ssl.itunes.apple.com/itunes-assets/Music/v4/66/6b/11/666b111f-e36a-0ea3-d065-a39f348f7eb2/mzaf_1117889230080946932.plus.aac.p.m4a
-                        artworkUrl30:
-                          type: string
-                          example: https://is3-ssl.mzstatic.com/image/thumb/Music71/v4/10/7b/63/107b63dd-f5ee-f079-843d-f45dfcdabdb8/source/30x30bb.jpg
-                        artworkUrl60:
-                          type: string
-                          example: https://is3-ssl.mzstatic.com/image/thumb/Music71/v4/10/7b/63/107b63dd-f5ee-f079-843d-f45dfcdabdb8/source/60x60bb.jpg
-                        artworkUrl100:
-                          type: string
-                          example: https://is3-ssl.mzstatic.com/image/thumb/Music71/v4/10/7b/63/107b63dd-f5ee-f079-843d-f45dfcdabdb8/source/100x100bb.jpg
-                        collectionPrice:
+                          example: Coez
+                        prezzo:
                           type: number
-                          example: 12.99
-                        trackPrice:
-                          type: number
-                          example: 1.29
-                        releaseDate:
+                          example: 0.99
+                        link:
                           type: string
-                          example: "1996-12-21T07:00:00Z"
-                        collectionExplicitness:
-                          type: string
-                          example: notExplicit
-                        trackExplicitness:
-                          type: string
-                          example: notExplicit
-                        discCount:
-                          type: integer
-                          example: 1 
-                        discNumber:
-                          type: integer
-                          example: 1 
-                        trackCount:
-                          type: integer
-                          example: 3 
-                        trackNumber:
-                          type: integer
-                          example: 1 
-                        trackTimeMillis:
-                          type: integer
-                          example: 243750
-                        country:
-                          type: string
-                          example: ITA
-                        currency:
-                          type: string
-                          example: EUR
-                        primaryGenreName:
-                          type: string
-                          example: Dance
-                        isStreamable:
-                          type: boolean
-                          example: true
+                          example: https://music.apple.com/us/album/ciao/1324328640?i=1324328644&uo=4
                         
                         
                         
@@ -244,38 +169,32 @@ paths:
               schema:
                 type: object
                 properties:
-                  resultCount: 
+                  tipoRisultato: 
+                    type: string
+                    example: iTunesArtist
+                  risultatiTotali: 
                     type: integer
                     example: 1
-                  results:
+                  items:
                     type: array
                     items:
                       type: object
                       properties:
-                        wrapperType:
-                          type: string
-                          example: artist
-                        artistType:
-                          type: string
-                          example: Artist
-                        artistName:
+                        nome:
                           type: string
                           example: Vasco Rossi
-                        artistLinkUrl:
+                        album:
+                          type: string
+                          example: 0
+                        autore:
+                          type: string
+                          example: 0
+                        prezzo:
+                          type: number
+                          example: 0
+                        link:
                           type: string
                           example: https://music.apple.com/us/artist/vasco-rossi/14589739?uo=4
-                        artistId:
-                          type: integer
-                          example: 14589739
-                        amgArtistId:
-                          type: integer
-                          example: 210021
-                        primaryGenreName:
-                          type: string
-                          example: Rock
-                        primaryGenreId:
-                          type: integer
-                          example: 21
                           
         '400':
           description: bad request
@@ -328,117 +247,48 @@ paths:
               schema:
                 type: object
                 properties:
-                  kind: 
+                  tipoRisultato: 
                     type: string
-                    example: youtube#videoListResponse
-                  etag:
-                    type: string
-                    example: 8jEFfXBrqiSrcF6Ee7MQuz8XuAM/1-IegeKdUVdKyyIiDUf7o5ot2MI\
-                  pageInfo:
-                    type: object
-                    properties:
-                      totalResults: 
-                        type: integer
-                        example: 5
-                      resultsPerPage:
-                        type: integer
-                        example: 5
+                    example: YouTubeVideo
+                  risultatiTotali: 
+                    type: integer
+                    example: 3
                   items:
                     type: array
                     items:
                       type: object
                       properties:
-                        kind: 
+                        nome:
                           type: string
-                          example: youtube#video
-                        etag: 
+                          
+                        album:
                           type: string
-                          example: "\"8jEFfXBrqiSrcF6Ee7MQuz8XuAM/AUXILX0NKl3BUll_Fh-Ks\""
-                        id:
+                          
+                        autore:
                           type: string
-                          example: 1dtNaPRZHkk
-                        snippet:
-                          type: object
-                          properties:
-                            publishedAt:
-                              type: string
-                              example: "2009-08-02T14:21:45.000Z"
-                            channelId: 
-                              type: string
-                              example: UC1l8ExtfFqwTa5i1-xqvaew
-                            title: 
-                              type: string
-                              example: vasco rossi - sally
-                            description: 
-                              type: string
-                              example: una delle canzoni piu' belle di vasco
-                            thumbnails:
-                              type: object
-                              properties:
-                                default:
-                                  type: object
-                                  properties:
-                                    url:
-                                      type: string
-                                      example: https://i.ytimg.com/vi/1dtNaPRZHkk/default.jpg
-                                    width: 
-                                      type: integer
-                                      example: 120
-                                    height: 
-                                      type: integer
-                                      example: 90
-                                medium:
-                                  type: object
-                                  properties:
-                                    url:
-                                      type: string
-                                      example: https://i.ytimg.com/vi/1dtNaPRZHkk/mqdefault.jpg
-                                    width: 
-                                      type: integer
-                                      example: 320
-                                    height: 
-                                      type: integer
-                                      example: 120
-                                high:
-                                  type: object
-                                  properties:
-                                    url:
-                                      type: string
-                                      example: https://i.ytimg.com/vi/1dtNaPRZHkk/hqdefault.jpg
-                                    width: 
-                                      type: integer
-                                      example: 480
-                                    height: 
-                                      type: integer
-                                      example: 360
-                            channelTitle:
-                              type: string
-                              example: Shasa Topa
-                            tags:
-                              type: array
-                              items:
-                                type: string
-                                example: 
-                                - "Vasco"
-                                - "Rossi"
-                                - "Sally"
-                                  
-                            categoryId: 
-                              type: integer
-                              example: 10
-                            liveBroadcastContent: 
-                              type: string
-                              example: none
-                            localized:
-                              type: object
-                              properties:
-                                title: 
-                                  type: string
-                                  example: vasco rossi - sally
-                                description: 
-                                  type: string
-                                  example: "una delle canzoni piu' belle di vasco"
-                            
+                          
+                        prezzo:
+                          type: number
+                          
+                        link:
+                          type: string
+                    
+                    example:
+                      - nome: Coez - Ciao
+                        album: 0
+                        autore: 0
+                        prezzo: 0
+                        link: www.youtube.com/watch?v=0GO0YdJvy_s
+                      - nome: Coez - Ciao
+                        album: 0
+                        autore: 0
+                        prezzo: 0
+                        link: www.youtube.com/watch?v=xdGGkDkkCS0
+                      - nome: Coez - Ciao (live)
+                        album: 0
+                        autore: 0
+                        prezzo: 0
+                        link: www.youtube.com/watch?v=hC01zbJRT9w
                                 
         '400':
           description: bad request
@@ -498,193 +348,39 @@ paths:
               schema:
                 type: object
                 properties:
-                  tracks: 
-                    type: object
-                    properties:
-                      href:
-                        type: string
-                        example: https://api.spotify.com/v1/search?query=ciao+coez&type=track&market=IT&offset=0&limit=5
-                      items:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            album:
-                              type: object
-                              properties:
-                                album_type:
-                                  type: string
-                                  example: album
-                                artists:
-                                  type: array
-                                  items:
-                                    type: object
-                                    properties:
-                                      external_urls:
-                                        type: object
-                                        properties:
-                                          spotify:
-                                            type: string
-                                            example: https://open.spotify.com/artist/5dXl3n4
-                                      href:
-                                        type: string
-                                        example: https://api.spotify.com/v1/artists/5d7Mne3n
-                                      id: 
-                                        type: string
-                                        example: 5dXlc7MnpaTeUIsHLVe3n4
-                                      name: 
-                                        type: string
-                                        example: Coez
-                                      type: 
-                                        type: string
-                                        example: artist
-                                      uri: 
-                                        type: string
-                                        example: spotify:artist:5dXlc7MnpaTeUIsHLVe3n4
-                                available_markets:
-                                  type: array
-                                  items:
-                                    type: string
-                                    example:
-                                      - "EN"
-                                      - "IT"
-                                external_urls:
-                                        type: object
-                                        properties:
-                                          spotify:
-                                            type: string
-                                            example: https://open.spotify.com/album/3aKazjsiS8lDp
-                                href: 
-                                  type: string
-                                  example: https://api.spotify.com/v1/albums/3aKazS8lDp
-                                id: 
-                                  type: string
-                                  example: 3aKazjcDl544T21siS8lDp
-                                images:
-                                  type: array
-                                  items:
-                                    type: object
-                                    example:
-                                      height: 640
-                                      url: https://i.scdn.co/image/b611ce884c93e6b
-                                      width: 640
-                                name: 
-                                  type: string
-                                  example: Faccio un casino
-                                release_date:
-                                  type: string
-                                  example: "2017-05-05"
-                                release_date_precision: 
-                                  type: string
-                                  example: day
-                                total_tracks: 
-                                  type: integer
-                                  example: 12
-                                type: 
-                                  type: string
-                                  example: album
-                                uri: 
-                                  type: string
-                                  example: spotify:album:3aKazjcDl544T21siS8lDp
+                  tipoRisultato: 
+                    type: string
+                    example: SpotifySong
+                  risultatiTotali: 
+                    type: integer
+                    example: 1
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        nome:
+                          type: string
+                          
+                        album:
+                          type: string
+                          
+                        autore:
+                          type: string
+                          
+                        prezzo:
+                          type: number
+                          
+                        link:
+                          type: string
                     
-                                
-                            artists:
-                              type: array
-                              items:
-                                type: object
-                                properties:
-                                  external_urls:
-                                    type: object
-                                    properties:
-                                      spotify:
-                                        type: string
-                                        example: https://open.spotify.com/artist/5dXlc7M4
-                                  href: 
-                                    type: string
-                                    example: https://api.spotify.com/v1/artists/5dXl3n4
-                                  id: 
-                                    type: string
-                                    example: 5dXlc7MnpaTeUIsHLVe3n4
-                                  name: 
-                                    type: string
-                                    example: Coez
-                                  type:
-                                    type: string
-                                    example: artist
-                                  uri: 
-                                    type: string
-                                    example: spotify:artist:5dXlc7MnpaTeUIsHLVe3n4
-                            
-                            available_markets:
-                              type: array
-                              items:
-                                type: string
-                                example:
-                                  - "EN"
-                                  - "IT"
-                            disc_number: 
-                              type: integer
-                              example: 1
-                            duration_ms: 
-                              type: integer
-                              example: 219360
-                            explicit: 
-                              type: boolean
-                              example: false
-                            external_ids: 
-                              type: object
-                              properties:
-                                isrc:
-                                  type: string
-                                  example: ITNTP1700004
-                            external_urls: 
-                              type: object
-                              properties:
-                                spotify: 
-                                  type: string
-                                  example: https://open.spotify.com/track/3OMEBBK44d
-                            href: 
-                              type: string
-                              example: https://api.spotify.com/v1/tracks/3OMEBK44d
-                            id:
-                              type: string
-                              example: 3OME70nD4TS08u5XBBK44d
-                            is_local: 
-                              type: boolean
-                              example: false
-                            name: 
-                              type: string
-                              example: Ciao
-                            popularity: 
-                              type: integer
-                              example: 50
-                            preview_url: 
-                              type: string
-                              example: https://p.scdn.co/mp3-preview/c89c36adeb89779a2a45d8c4bdf135acd7ef65ce?cid=feedf0f81c40480b856ccbc83cbd567d
-                            track_number: 
-                              type: integer
-                              example: 2
-                            type: 
-                              type: string
-                              example: track
-                            uri: 
-                              type: string
-                              example: spotify:track:3OME70nD4TS08u5XBBK44d
-                      limit: 
-                        type: integer
-                        example: 5
-                      next: 
-                        type: string
-                        example: null
-                      offset: 
-                        type: integer
-                        example: 0
-                      previous: 
-                        type: string
-                        example: null
-                      total: 
-                        type: integer
-                        example: 1      
+                    example:
+                      - nome: Ciao
+                        album: 0
+                        autore: Coez
+                        prezzo: 0
+                        link: https://open.spotify.com/track/3OME70nD4TS08u5XBBK44d
+                         
                                 
         '400':
           description: bad request
