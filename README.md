@@ -30,7 +30,8 @@ app.get('/help', (req, res) => {
 
 ```
 
-Ciascuna richiesta HTTP proveniente dal client (per testare le API è stato utilizzato il bot di Telegram _@FindYourFavouriteMusicBot_ ), verrà inoltrata al suo opportuno _endpoint_, che ricaverà i dati richiesti in formato JSON per poi impostarli come risposta della richiesta formulata dal client.
+Ciascuna richiesta HTTP proveniente dal client (per testare le API è stato utilizzato il bot di Telegram _@FindYourFavouriteMusicBot_ ), verrà inoltrata al suo opportuno _endpoint_, che ricaverà i dati richiesti in formato JSON per poi impostarli come risposta della richiesta formulata dal client.<br>
+Nel caso in cui nella richiesta HTTP da parte del client non sia specificato un corretto path tra quelli sopra elencati, la richiesta si riferirà all'endpoint base del server, cioè  _/_  , il qualè restituirà una semplice pagina in formato HTML della quale si può trovare il codice sorgente [qui](index.html).
 
 ### Scelte implementative
 La principale scelta implementativa che è stata presa riguarda la gestione del token di accesso utilizzato per la ricerca di brani musicali su Spotify. <br>Tale token di accesso ha una validità molto ristretta di 3600 secondi, cioè di un'ora.
@@ -123,7 +124,7 @@ Come nei due precedenti casi, le API messe a disposizione da Spotify, distribuis
 
 ## Documentazione API
 La specifica dell'API è stata progettata seguendo lo standard RESTful ed è inoltre conforme allo standard Open API. Si può trovare infatti nella repository, il [file](openapi.yaml) con con estensione _.yaml_ che descrive il funzionamento delle API seguendo lo standard Open API 3.0.0.
-Ogni endpoint che gestisce una precisa richiesta restituisce strutture di tipo JSON. Al momento della formulazione della richiesta HTTP da parte del client, sarà importante specificare come parametro di _header_
+Ogni endpoint che gestisce una precisa richiesta restituisce strutture di tipo JSON, tutte della stessa struttura, così da facilitare il client al momento della formattazione del'output. Al momento della formulazione della richiesta HTTP da parte del client, sarà importante specificare come parametro di _header_
 ```bash
 Accept: application/json
 ```
@@ -250,39 +251,15 @@ __Codici di risposta__
 __Esempio__
 ```bash
 {
-  "resultCount":1,
-  "results": [
+  "tipoRisultato": "iTunesSong",
+  "risultatiTotali": 1,
+  "items": [
     {
-      "wrapperType":"track",
-      "kind":"song",
-      "artistId":252282750,
-      "collectionId":1324328640,
-      "trackId":1324328644,
-      "artistName":"Coez",
-      "collectionName":"Faccio un casino",
-      "trackName":"Ciao",
-      "collectionCensoredName":"Faccio un casino",
-      "trackCensoredName":"Ciao",
-      "artistViewUrl":"https://music.apple.com/us/artist/coez/252282750?uo=4", "collectionViewUrl":"https://music.apple.com/us/album/ciao/1324328640?i=1324328644&uo=4",
-      "trackViewUrl":"https://music.apple.com/us/album/ciao/1324328640?i=1324328644&uo=4",
-      "previewUrl":"https://audio-ssl.itunes.apple.com/itunes-assets/AudioPreview128/v4/60/f0/1d/60f01db5-5397-7310-31c2-ee42beb3018e/mzaf_149484567351778114.plus.aac.p.m4a",
-      "artworkUrl30":"https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/e6/85/4e/e6854e99-22b3-f536-9567-41ef446c6c54/source/30x30bb.jpg",
-      "artworkUrl60":"https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/e6/85/4e/e6854e99-22b3-f536-9567-41ef446c6c54/source/60x60bb.jpg",
-      "artworkUrl100":"https://is1-ssl.mzstatic.com/image/thumb/Music128/v4/e6/85/4e/e6854e99-22b3-f536-9567-41ef446c6c54/source/100x100bb.jpg",
-      "collectionPrice":7.99,
-      "trackPrice":0.99,
-      "releaseDate":"2017-05-05T07:00:00Z",
-      "collectionExplicitness":"notExplicit",
-      "trackExplicitness":"notExplicit",
-      "discCount":1,
-      "discNumber":1,
-      "trackCount":12,
-      "trackNumber":2,
-      "trackTimeMillis":219360,
-      "country":"USA",
-      "currency":"USD",
-      "primaryGenreName":"Pop/Rock",
-      "isStreamable":true
+      "nome": "Ciao",
+      "album": "Faccio un casino",
+      "autore": "Coez",
+      "prezzo": 0.99,
+      "link": "https://music.apple.com/us/album/ciao/1324328640?i=1324328644&uo=4"
     }
   ]
 }
@@ -334,17 +311,15 @@ __Codici di risposta__
 __Esempio__
 ```bash
 {
- "resultCount":1,
- "results": [
+  "tipoRisultato": "iTunesArtist",
+  "risultatiTotali": 1,
+  "items": [
     {
-      "wrapperType":"artist",
-      "artistType":"Artist",
-      "artistName":"Coez",
-      "artistLinkUrl":"https://music.apple.com/us/artist/coez/252282750?uo=4",
-      "artistId":252282750,
-      "amgArtistId":2835325,
-      "primaryGenreName":"Pop",
-      "primaryGenreId":14
+      "nome": "Vasco Rossi",
+      "album": 0,
+      "autore": 0,
+      "prezzo": 0,
+      "link": "https://music.apple.com/us/artist/vasco-rossi/14589739?uo=4"
     }
   ]
 }
@@ -396,192 +371,31 @@ __Codici di risposta__
 __Esempio__
 ```bash
 {
-  "kind": "youtube#videoListResponse",
-  "etag": "\"8jEFfXBrqiSrcF6Ee7MQuz8XuAM/HHy2Y_QyvyZd4lsuBYF5e8l5vEw\"",
-  "pageInfo": {
-    "totalResults": 5,
-    "resultsPerPage": 5
-  },
+  "tipoRisultato": "YouTubeVideo",
+  "risultatiTotali": 3,
   "items": [
     {
-      "kind": "youtube#video",
-      "etag": "\"8jEFfXBrqiSrcF6Ee7MQuz8XuAM/4rdgbJOEc-R_kSLmh4eLjkZi4dE\"",
-      "id": "0GO0YdJvy_s",
-      "snippet": {
-        "publishedAt": "2018-04-10T09:00:00.000Z",
-        "channelId": "UC_a9Mxea2o3ehCHzI-kjxMQ",
-        "title": "Coez - Ciao",
-        "description": "Ascolta lâ€™album â€œFaccio un casinoâ€ qui: https://lnk.to/Coez_FaccioUnCasino\n\nRegia di Younuts\nMontaggio di Lorenzo Catapano\nProduzione esecutiva di Coez\nTesto di Coez\nProduzione di Frenetik & Orang3\nRegistrato allo Studi8 / Lanificio159, Roma\n\nSeguimi su:\nInstagram: http://bit.ly/Coez_IG\nSpotify: http://bit.ly/Coez_SP\nFacebook: http://bit.ly/Coez_FB\n\nhttp://vevo.ly/yMcsdd",
-        "thumbnails": {
-          "default": {
-            "url": "https://i.ytimg.com/vi/0GO0YdJvy_s/default.jpg",
-            "width": 120,
-            "height": 90
-          },
-          "medium": {
-            "url": "https://i.ytimg.com/vi/0GO0YdJvy_s/mqdefault.jpg",
-            "width": 320,
-            "height": 180
-          },
-          "high": {
-            "url": "https://i.ytimg.com/vi/0GO0YdJvy_s/hqdefault.jpg",
-            "width": 480,
-            "height": 360
-          },
-          "standard": {
-            "url": "https://i.ytimg.com/vi/0GO0YdJvy_s/sddefault.jpg",
-            "width": 640,
-            "height": 480
-          },
-          "maxres": {
-            "url": "https://i.ytimg.com/vi/0GO0YdJvy_s/maxresdefault.jpg",
-            "width": 1280,
-            "height": 720
-          }
-        },
-        "channelTitle": "CoezVEVO",
-        "tags": [
-          "faccio un casino",
-          "la musica non c'Ã¨",
-          "le luci della cittÃ ",
-          "e yo mamma",
-          "taciturnal",
-          "gemitaiz",
-          "noyz narcos",
-          "calcutta"
-        ],
-        "categoryId": "10",
-        "liveBroadcastContent": "none",
-        "localized": {
-          "title": "Coez - Ciao",
-          "description": "Ascolta lâ€™album â€œFaccio un casinoâ€ qui: https://lnk.to/Coez_FaccioUnCasino\n\nRegia di Younuts\nMontaggio di Lorenzo Catapano\nProduzione esecutiva di Coez\nTesto di Coez\nProduzione di Frenetik & Orang3\nRegistrato allo Studi8 / Lanificio159, Roma\n\nSeguimi su:\nInstagram: http://bit.ly/Coez_IG\nSpotify: http://bit.ly/Coez_SP\nFacebook: http://bit.ly/Coez_FB\n\nhttp://vevo.ly/yMcsdd"
-        }
-      }
+      "nome": "Coez - Ciao",
+      "album": 0,
+      "autore": 0,
+      "prezzo": 0,
+      "link": "www.youtube.com/watch?v=0GO0YdJvy_s"
     },
     {
-      "kind": "youtube#video",
-      "etag": "\"8jEFfXBrqiSrcF6Ee7MQuz8XuAM/g8QU7Z4a7qLFmqTaIC3rEvfCcVo\"",
-      "id": "xdGGkDkkCS0",
-      "snippet": {
-        "publishedAt": "2017-07-02T22:05:20.000Z",
-        "channelId": "UC-v9Kf6e2CQajrzGjmbAy4Q",
-        "title": "Coez - Ciao",
-        "description": "Ho smesso col credere ai grandi\no almeno di credere che esistano\nquando ho smesso con il crystalball\nNon do piÃ¹ peso alle parole di una rivista, oh\nUn vero artista dicono non si rattrista, no\nHo smesso con certi\ntipi di rum, non mi\nfacevano stare bene i giorni dopo i concerti\nE ho chiuso progetti,\nho smesso di avere rapporti non protetti\nda quando non sto con te\n\nCiao, ci vediamo? Come va?\nE come mai non smetto mai con te,\nsembra strano, te ne vai,\nma le tue strade portano da me, perchÃ©, perchÃ©,\ne le mie strade portano da te, perchÃ©, perchÃ©\nHo giÃ  smesso di chiedermelo\n\nHo smesso col frequentare certe sale da ballo\nSe non mi riesco ad addormentare do la colpa al caldo,\ne guardo spesso in alto, cerco di non cadere\nSono a terra e rido, ciÃ² che Ã¨ a terra ormai non puÃ² cadere\nDove andrai, dove andrÃ², e come piange il cielo oh\nsu di te, su di noi, siamo soli davvero\n\nCiao, ci vediamo? Come va?\nE come mai non smetto mai con te,\nsembra strano, te ne vai,\nma le tue strade portano da me, perchÃ©, perchÃ©,\ne le mie strade portano da te, perchÃ©, perchÃ©\nHo giÃ  smesso di chiedermelo\n\nHo smesso di lottare andare contro certi mostri\nDentro un cinema 3D con piÃ¹ di mille posti\nE ho smesso di volere donne, soldi, gloria e fama\nPerchÃ© la brama delle cose infine le allontana\n\nCiao, ci vediamo? Come va?\nE come mai non smetto mai con te,\nsembra strano, te ne vai,\nma le tue strade portano da me, perchÃ©, perchÃ©,\ne le mie strade portano da te, perchÃ©, perchÃ©\nHo giÃ  smesso di chiedermelo",
-        "thumbnails": {
-          "default": {
-            "url": "https://i.ytimg.com/vi/xdGGkDkkCS0/default.jpg",
-            "width": 120,
-            "height": 90
-          },
-          "medium": {
-            "url": "https://i.ytimg.com/vi/xdGGkDkkCS0/mqdefault.jpg",
-            "width": 320,
-            "height": 180
-          },
-          "high": {
-            "url": "https://i.ytimg.com/vi/xdGGkDkkCS0/hqdefault.jpg",
-            "width": 480,
-            "height": 360
-          },
-          "standard": {
-            "url": "https://i.ytimg.com/vi/xdGGkDkkCS0/sddefault.jpg",
-            "width": 640,
-            "height": 480
-          },
-          "maxres": {
-            "url": "https://i.ytimg.com/vi/xdGGkDkkCS0/maxresdefault.jpg",
-            "width": 1280,
-            "height": 720
-          }
-        },
-        "channelTitle": "ba rik",
-        "tags": [
-          "coez",
-          "ciao",
-          "faccio",
-          "un",
-          "casino",
-          "faccio un casino"
-        ],
-        "categoryId": "10",
-        "liveBroadcastContent": "none",
-        "localized": {
-          "title": "Coez - Ciao",
-          "description": "Ho smesso col credere ai grandi\no almeno di credere che esistano\nquando ho smesso con il crystalball\nNon do piÃ¹ peso alle parole di una rivista, oh\nUn vero artista dicono non si rattrista, no\nHo smesso con certi\ntipi di rum, non mi\nfacevano stare bene i giorni dopo i concerti\nE ho chiuso progetti,\nho smesso di avere rapporti non protetti\nda quando non sto con te\n\nCiao, ci vediamo? Come va?\nE come mai non smetto mai con te,\nsembra strano, te ne vai,\nma le tue strade portano da me, perchÃ©, perchÃ©,\ne le mie strade portano da te, perchÃ©, perchÃ©\nHo giÃ  smesso di chiedermelo\n\nHo smesso col frequentare certe sale da ballo\nSe non mi riesco ad addormentare do la colpa al caldo,\ne guardo spesso in alto, cerco di non cadere\nSono a terra e rido, ciÃ² che Ã¨ a terra ormai non puÃ² cadere\nDove andrai, dove andrÃ², e come piange il cielo oh\nsu di te, su di noi, siamo soli davvero\n\nCiao, ci vediamo? Come va?\nE come mai non smetto mai con te,\nsembra strano, te ne vai,\nma le tue strade portano da me, perchÃ©, perchÃ©,\ne le mie strade portano da te, perchÃ©, perchÃ©\nHo giÃ  smesso di chiedermelo\n\nHo smesso di lottare andare contro certi mostri\nDentro un cinema 3D con piÃ¹ di mille posti\nE ho smesso di volere donne, soldi, gloria e fama\nPerchÃ© la brama delle cose infine le allontana\n\nCiao, ci vediamo? Come va?\nE come mai non smetto mai con te,\nsembra strano, te ne vai,\nma le tue strade portano da me, perchÃ©, perchÃ©,\ne le mie strade portano da te, perchÃ©, perchÃ©\nHo giÃ  smesso di chiedermelo"
-        }
-      }
+      "nome": "Coez - Ciao",
+      "album": 0,
+      "autore": 0,
+      "prezzo": 0,
+      "link": "www.youtube.com/watch?v=xdGGkDkkCS0"
     },
     {
-      "kind": "youtube#video",
-      "etag": "\"8jEFfXBrqiSrcF6Ee7MQuz8XuAM/8Xr7hIivWopDc0qJoR6pkUYiEpk\"",
-      "id": "KWYEYtvy5gY",
-      "snippet": {
-        "publishedAt": "2016-06-30T04:44:08.000Z",
-        "channelId": "UCyBt6Co1RqrSMV64FGy_i7w",
-        "title": "COEZ â€“ CIAO (Inedito Live - testo)",
-        "description": "Questo Ã¨ l'inedito che Coez ha cantato al Rock in Roma il 25 giugno 2016, e come ha detto lui, Ã¨ una mina! Decisamente all'altezza dei suoi pezzi precedenti, se non addirittura migliore di questi!\nSpero vi piaccia!",
-        "thumbnails": {
-          "default": {
-            "url": "https://i.ytimg.com/vi/KWYEYtvy5gY/default.jpg",
-            "width": 120,
-            "height": 90
-          },
-          "medium": {
-            "url": "https://i.ytimg.com/vi/KWYEYtvy5gY/mqdefault.jpg",
-            "width": 320,
-            "height": 180
-          },
-          "high": {
-            "url": "https://i.ytimg.com/vi/KWYEYtvy5gY/hqdefault.jpg",
-            "width": 480,
-            "height": 360
-          },
-          "standard": {
-            "url": "https://i.ytimg.com/vi/KWYEYtvy5gY/sddefault.jpg",
-            "width": 640,
-            "height": 480
-          },
-          "maxres": {
-            "url": "https://i.ytimg.com/vi/KWYEYtvy5gY/maxresdefault.jpg",
-            "width": 1280,
-            "height": 720
-          }
-        },
-        "channelTitle": "bea",
-        "tags": [
-        "coez",
-        "ciao",
-        "inedito",
-        "lyrics",
-        "testo",
-        "coez ciao",
-        "coez inedito",
-        "coez live",
-        "live",
-        "roma",
-        "capannelle",
-        "giugno",
-        "25 giugno",
-        "rock in roma",
-        "the italian way",
-        "coez rock in roma",
-        "2016"
-      ],
-      "categoryId": "22",
-      "liveBroadcastContent": "none",
-      "localized": {
-        "title": "COEZ â€“ CIAO (Inedito Live - testo)",
-        "description": "Questo Ã¨ l'inedito che Coez ha cantato al Rock in Roma il 25 giugno 2016, e come ha detto lui, Ã¨ una mina! Decisamente all'altezza dei suoi pezzi precedenti, se non addirittura migliore di questi!\nSpero vi piaccia!"
-      }
+      "nome": "Coez - Ciao (live)",
+      "album": 0,
+      "autore": 0,
+      "prezzo": 0,
+      "link": "www.youtube.com/watch?v=hC01zbJRT9w"
     }
-  },
-  {
-    ...
-  },
-  {
-    ...
-  }
- ]
+  ]
 }
 ```
 <br>
@@ -639,93 +453,17 @@ __Codici di risposta__
 __Esempio__
 ```bash
 {
-  "tracks" : {
-    "href" : "https://api.spotify.com/v1/search?query=ciao+coez&type=track&market=IT&offset=0&limit=5",
-    "items" : [
-      {
-        "album" : {
-          "album_type" : "album",
-          "artists" : [
-            {
-              "external_urls" : {
-                "spotify" : "https://open.spotify.com/artist/5dXlc7MnpaTeUIsHLVe3n4"
-              },
-              "href" : "https://api.spotify.com/v1/artists/5dXlc7MnpaTeUIsHLVe3n4",
-              "id" : "5dXlc7MnpaTeUIsHLVe3n4",
-              "name" : "Coez",
-              "type" : "artist",
-              "uri" : "spotify:artist:5dXlc7MnpaTeUIsHLVe3n4"
-            }
-          ],
-          "available_markets" : [ "AD", "AE", "AR", "AT", "AU", "BE", "BG", "BH", "BO", "BR", "CA", "CH", "CL", "CO", "CR", "CY", "CZ", "DE", "DK", "DO", "DZ", "EC", "EE", "EG", "ES", "FI", "FR", "GB", "GR", "GT", "HK", "HN", "HU", "ID", "IE", "IL", "IN", "IS", "IT", "JO", "JP", "KW", "LB", "LI", "LT", "LU", "LV", "MA", "MC", "MT", "MX", "MY", "NI", "NL", "NO", "NZ", "OM", "PA", "PE", "PH", "PL", "PS", "PT", "PY", "QA", "RO", "SA", "SE", "SG", "SK", "SV", "TH", "TN", "TR", "TW", "US", "UY", "VN", "ZA" ],
-          "external_urls" : {
-            "spotify" : "https://open.spotify.com/album/3aKazjcDl544T21siS8lDp"
-          },
-          "href" : "https://api.spotify.com/v1/albums/3aKazjcDl544T21siS8lDp",
-          "id" : "3aKazjcDl544T21siS8lDp",
-          "images" : [
-            {
-              "height" : 640,
-              "url" : "https://i.scdn.co/image/b611ce88b3e17998893f12fa40a680d144c93e6b",
-              "width" : 640
-            },  
-            {
-              "height" : 300,
-              "url" : "https://i.scdn.co/image/2a49ba6bc7ebf81bf59ce6f7b63eb52c11b3f4ac",
-              "width" : 300
-            },
-            {
-              "height" : 64,
-              "url" : "https://i.scdn.co/image/4a8b528d7fe0203975ac147a47721e62c01b1482",
-              "width" : 64
-            }
-          ],
-          "name" : "Faccio un casino",
-          "release_date" : "2017-05-05",
-          "release_date_precision" : "day",
-          "total_tracks" : 12,
-          "type" : "album",
-          "uri" : "spotify:album:3aKazjcDl544T21siS8lDp"
-        },
-        "artists" : [
-          {
-            "external_urls" : {
-              "spotify" : "https://open.spotify.com/artist/5dXlc7MnpaTeUIsHLVe3n4"
-            },
-            "href" : "https://api.spotify.com/v1/artists/5dXlc7MnpaTeUIsHLVe3n4",
-            "id" : "5dXlc7MnpaTeUIsHLVe3n4",
-            "name" : "Coez",
-            "type" : "artist",
-            "uri" : "spotify:artist:5dXlc7MnpaTeUIsHLVe3n4"
-          }
-        ],
-        "available_markets" : [ "AD", "AE", "AR", "AT", "AU", "BE", "BG", "BH", "BO", "BR", "CA", "CH", "CL", "CO", "CR", "CY", "CZ", "DE", "DK", "DO", "DZ", "EC", "EE", "EG", "ES", "FI", "FR", "GB", "GR", "GT", "HK", "HN", "HU", "ID", "IE", "IL", "IN", "IS", "IT", "JO", "JP", "KW", "LB", "LI", "LT", "LU", "LV", "MA", "MC", "MT", "MX", "MY", "NI", "NL", "NO", "NZ", "OM", "PA", "PE", "PH", "PL", "PS", "PT", "PY", "QA", "RO", "SA", "SE", "SG", "SK", "SV", "TH", "TN", "TR", "TW", "US", "UY", "VN", "ZA" ],
-        "disc_number" : 1,
-        "duration_ms" : 219360,
-        "explicit" : false,
-        "external_ids" : {
-          "isrc" : "ITNTP1700004"
-        },
-        "external_urls" : {
-          "spotify" : "https://open.spotify.com/track/3OME70nD4TS08u5XBBK44d"
-        },
-        "href" : "https://api.spotify.com/v1/tracks/3OME70nD4TS08u5XBBK44d",
-        "id" : "3OME70nD4TS08u5XBBK44d",
-        "is_local" : false,
-        "name" : "Ciao",
-        "popularity" : 51,
-        "preview_url" : "https://p.scdn.co/mp3-preview/c89c36adeb89779a2a45d8c4bdf135acd7ef65ce?cid=feedf0f81c40480b856ccbc83cbd567d",
-        "track_number" : 2,
-        "type" : "track",
-        "uri" : "spotify:track:3OME70nD4TS08u5XBBK44d"
-      }
-    ],
-    "limit" : 5,
-    "next" : null,
-    "offset" : 0,
-    "previous" : null,
-    "total" : 1
-  }
+  "tipoRisultato": "SpotifySong",
+  "risultatiTotali": 1,
+  "items": [
+    {
+      "nome": "Ciao",
+      "album": 0,
+      "autore": "Coez",
+      "prezzo": 0,
+      "link": "https://open.spotify.com/track/3OME70nD4TS08u5XBBK44d"
+    }
+  ]
 }
 ```
 <br>
